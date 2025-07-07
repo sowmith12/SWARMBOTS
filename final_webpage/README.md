@@ -50,7 +50,7 @@ The system is designed for a differential-drive UGV with two DC motors controlle
 
 ## Usage
 The web interface provides a user-friendly way to interact with the UGV:
-<img src="final.png" alt="Alt text" width="500" height="800">
+<img src="final.png" alt="Alt text" width="500" height="1000">
 
 ### Manual Controls
 - **Directional Buttons**: Click or hold buttons (↑, ←, ⬛, →, ↓) to move forward, turn left, stop, turn right, or move backward.
