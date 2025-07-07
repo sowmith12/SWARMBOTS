@@ -84,7 +84,7 @@ The web interface provides a user-friendly way to interact with the UGV:
 The code integrates several components to control the UGV and provide a seamless user experience. Below is an explanation of its key functionalities:
 
 ### 1. Core Setup and Loop
-- **File**: `UGVControl.ino`
+- **File**: `interface.ino`
 - **Purpose**: Initializes the ESP32, sets up motor pins, connects to Wi-Fi, and starts the web server.
 - **Key Functions**:
   - `setup()`: Configures serial communication, motor pins, Wi-Fi, and web server routes. Attempts Wi-Fi connection for up to 10 seconds, with a fallback to soft AP mode (commented out).
@@ -160,8 +160,7 @@ The code integrates several components to control the UGV and provide a seamless
 
 ## File Structure
 The project is contained in a single file for simplicity but is logically modular:
-- **File**: `UGVControl.ino` (originally `fullllllllll.txt`)
-  - **Recommendation**: Rename to `UGVControl.ino` for Arduino IDE compatibility.
+- **File**: `interface.ino` 
   - **Structure**:
     - **Includes and Globals**: Wi-Fi, motor pins, and global variables (e.g., `current_x`, `ugv_spots_to_visit`).
     - **Motor Control**: Functions to drive motors (`moveForward`, etc.).
@@ -186,9 +185,3 @@ For larger projects, consider splitting into separate `.h` files (e.g., `UGVNavi
 3. Click on the map or enter coordinates to add target spots (e.g., (10, 10), (20, 0)).
 4. Click “Allocate & Go!” to send spots to the UGV, which sorts them and navigates sequentially.
 5. Monitor the UGV’s path and position on the map, with status updates in the log.
-
-## Troubleshooting
-- **Wi-Fi Fails**: Check credentials and signal strength. Uncomment soft AP code for local access.
-- **No Movement**: Verify motor wiring, power supply, and RPM calibration.
-- **Inaccurate Position**: Recalibrate RPM and circumference. Check for wheel slip.
-- **Web Interface Issues**: Ensure the browser supports modern JavaScript (Fetch API, SVG). Clear cache if UI doesn’t update.
