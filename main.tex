@@ -1,0 +1,558 @@
+\documentclass[a4paper,12pt]{report}
+
+% Packages
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{amsmath}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=black, 
+    citecolor=black,
+    filecolor=black
+}
+
+\geometry{left=1in, right=1in, top=1in, bottom=1in}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COVER PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{empty}
+\begin{center}
+
+    \textbf{\Large REPORT ON}\\[1.5cm]
+
+    {\LARGE \textbf{SWARMBOTS: AUTONOMOUS}}\\[0.5cm]
+    {\LARGE \textbf{MULTI-AGENT TASK EXECUTION}}\\[2cm]
+
+    \includegraphics[width=0.45\textwidth]{IITH.png}\\[0.4cm]
+
+
+    {\large \textbf{SUBMITTED BY}}\\[0.2cm]
+    {\Large \textbf{MADOORI SOWMITH}}\\[2.0cm]
+
+    {\large \textit{Under The Guidance of}}\\[0.2cm]
+    {\Large \textbf{G.V.V SHARMA}}\\[0.5cm]
+
+    {\large \textbf{FUTURE WIRELESS COMMUNICATION}}\\[2.0cm]
+
+    {\Large \textbf{INDIAN INSTITUTION OF TECHNOLOGY, HYDERABAD (IITH)}}\\[2.0cm]
+
+    {\large \textbf{JULY 2025}}
+
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ABSTRACT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center}
+    {\Large \textbf{ABSTRACT}}
+\end{center}
+\vspace{1cm}
+This project presents SwarmBots, an embedded system designed for the autonomous
+coordination of multiple Unmanned Ground Vehicles (UGVs) using time-aware task
+distribution and fully offline communication. The system enables users to draw custom
+paths via a web interface hosted on the master ESP32, which segments the path and
+distributes sub-tasks among slave UGVs based on estimated execution time. Each
+UGV performs real-time position estimation using motor runtime and wheel
+specifications, eliminating the need for GPS or encoders.
+
+
+Communication between units is handled using the ESP-NOW protocol, allowing fast,
+peer-to-peer messaging without requiring internet or a router. The master UGV also
+provides live feedback and visual tracking of all bots through the same web interface.
+
+This approach demonstrates that complex swarm behavior can be achieved with
+minimal hardware, low power, and no external infrastructure. The system is scalable,
+low-cost, and suitable for real-world applications such as warehouse automation,
+precision agriculture, and educational robotics.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTERS START
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\chapter{Introduction}
+
+\section{Background}
+ In the era of autonomous systems, Unmanned Ground Vehicles (UGVs) are increasingly
+ used in surveillance, delivery, and search-and-rescue operations. Swarm robotics where
+ multiple robots collaborate to execute a task offers scalability, fault tolerance, and
+ efficiency. However, most existing swarm systems depend heavily on GPS, centralized
+ servers, or expensive sensors like LIDAR for mapping and coordination.
+
+ 
+ Our project presents a fully autonomous swarm UGV system that operates entirely offline
+ using only ESP32 modules, RPM based dead reckoning, and a custom web interface.
+ Unlike traditional approaches, our system begins by collaboratively mapping the
+ environment each UGV autonomously explores a designated region. Once the map is
+ formed, the user can select target points directly on the map, triggering a sequence of
+ operations including task distribution, optimal path planning, and obstacle aware
+ execution.
+
+ 
+ This layered approach starting from mapping, then to dynamic task execution proves
+ that intelligent swarm coordination can be achieved with minimal hardware and no
+ reliance on GPS, encoders, or internet infrastructure
+ \newpage
+\section{Motivation}
+The idea for this project emerged from a powerful, yet simple question - What if you could just explore or scan an area with robots, and then assign them tasks by simply clicking on a map? That vision led us to rethink how multiple robots could collaborate autonomously, without relying on GPS, internet, or high-end sensors. We aimed to combine embedded control, peer-to-peer wireless networking, and an intuitive web-based interface into one seamless swarm solution.
+
+In contrast, most real-world systems whether drone fleets, warehouse bots, or agricultural vehicles depend on costly infrastructure: GPS for localization, LIDAR or vision systems for tracking, and cloud services for coordination. These setups not only increase cost but become unusable in remote or post-disaster zones where connectivity is lost.
+
+So we challenged the norm and asked:
+\begin{itemize}
+    \item Can UGVs map and localize themselves without GPS or encoders?
+    \item Can they be controlled and coordinated without the internet?
+    \item Can we visually draw, select, and assign tasks and see it all work, live and offline?
+\end{itemize}
+
+Our answer: \textbf{SwarmBots} a lightweight swarm framework where UGVs first explore and map an environment collaboratively, and then dynamically receive tasks, calculate optimal paths, and avoid obstacles all using only RPM-based dead reckoning, a web dashboard, and ESP-NOW communication. This vision of doing more with less became our driving force focused on minimal hardware, full offline capability, and scalable swarm behavior.
+ \newpage
+
+\section{Problem Statement}
+Traditional multi-robot systems often rely on centralized control and GPS-based navigation, which introduces several limitations:
+
+\begin{itemize}
+    \item \textbf{Dependence on External Infrastructure:} GPS fails indoors, and cloud services require stable internet connectivity. LIDAR and vision systems demand heavy computation and cost.
+    \item \textbf{Rigid Task Assignment:} Most setups require pre-programmed task distribution or manual control per robot, making them unsuitable for dynamic environments.
+    \item \textbf{System Scalability Issues:} Adding new robots typically requires reconfiguring the entire system, reducing flexibility.
+\end{itemize}
+These limitations form a major bottleneck when designing a swarm system for offline, real-time applications, especially in network-restricted or post-disaster zones.
+
+The key challenges we targeted were:
+\begin{itemize}
+    \item How to collaboratively map an unknown area without GPS, LIDAR, or encoders?
+    \item How to enable point selection on the map after mapping, and then assign tasks dynamically based on user input?
+    \item How to calculate optimal sub-paths and avoid obstacles using only onboard logic and basic sensors?
+    \item How to achieve all of the above using peer-to-peer ESP-NOW communication, without Wi-Fi routers or cloud APIs?
+\end{itemize}
+
+Our goal was to build a fast, fully offline, low-cost, and scalable system where UGVs could not only localize and map environments, but also autonomously split tasks and navigate intelligently all without traditional infrastructure.
+ \newpage
+
+\section{Objective}
+The primary objective of this project was to design, develop, and demonstrate a fully offline swarm UGV system capable of autonomous mapping, task assignment, and coordinated path execution, using only embedded hardware and local communication.
+
+Specifically, the system enables multiple UGVs to:
+\begin{itemize}
+    \item Collaboratively explore and map an unknown environment by dividing the area (e.g., left/right) and estimating their positions using RPM-based dead reckoning without GPS, encoders, or LIDAR.
+    \item Select points directly from the generated map using a web interface, allowing users to assign tasks visually.
+    \item Distribute tasks intelligently using a Time-Aware Path Distribution Algorithm, ensuring balanced workload among all bots based on estimated execution time and distance.
+    \item Use ESP-NOW, a low-latency, peer-to-peer protocol, for all master-slave communication, ensuring fully offline operation.
+    \item Navigate and execute tasks using only onboard logic while avoiding obstacles and updating the master in real-time.
+    \item Visualize everything through an intuitive, self-hosted web dashboard that includes:
+    \begin{itemize}
+        \item Canvas-based map/path drawing
+        \item Click-based target selection
+        \item Live UGV position tracking
+        \item Execution status and logs
+        \item Manual override buttons
+    \end{itemize}
+\end{itemize}
+
+Secondary objectives included:
+\begin{itemize}
+    \item Ensuring modularity and scalability easily adding more UGVs with minimal configuration
+    \item Maintaining low-power and low-cost hardware constraints
+    \item Using only open-source tools and avoiding cloud/internet dependency
+\end{itemize}
+
+
+\chapter{Literature Survey}
+The field of swarm robotics has been extensively studied, focusing on decentralized coordination inspired by natural systems like ant colonies or bee swarms. Notable systems such as Amazon’s Kiva robots, Starship delivery bots, and ROS-based multi-robot platforms have demonstrated scalable swarm behaviors but they depend heavily on centralized servers, GPS for localization, or expensive sensors like LIDAR for mapping and path tracking.
+
+These high-cost systems often require:
+\begin{itemize}
+    \item Central cloud servers for coordination
+    \item GPS for localization (which fails indoors)
+    \item High-performance processors for SLAM or vision-based navigation
+    \item Wi-Fi infrastructure for communication
+\end{itemize}
+
+In contrast, our work addresses a technological gap: achieving similar functionality in fully offline environments using only embedded microcontrollers, without GPS, LIDAR, encoders, or internet.
+
+Previous studies on multi-agent task allocation often rely on:
+\begin{itemize}
+    \item Auction-based protocols or Contract-Net protocols, which require constant two-way communication and computing overhead
+    \item Centralized SLAM-based mapping, which is resource-heavy and not feasible on low-cost embedded systems
+\end{itemize}
+
+Our system takes a lightweight, embedded-first approach:
+\begin{itemize}
+    \item Collaborative RPM-based mapping is performed before any task assignment, enabling a virtual coordinate space to be created using dead reckoning.
+    \item Once mapped, the user can select target points on the map and the system automatically handles task distribution and obstacle-aware path planning.
+    \item All coordination is done using ESP-NOW, which offers low-latency, peer-to-peer messaging without needing routers or cloud APIs.
+    \item The web-based control panel hosted on the master ESP32 offers full offline interaction, from path drawing to execution feedback.
+\end{itemize}
+
+
+\chapter{Methodology}
+ To develop the SwarmBot system, we conducted an extensive review of research papers,
+ industrial practices, and technical resources related to swarm robotics, embedded motion
+ tracking, and task distribution algorithms. The following key areas guided the design and
+ implementation of our system.
+\section{Swarm Robotics and Multi-Agent Coordination}
+ Swarm robotics is based on principles derived from collective behavior observed in biological
+ systems such as ant colonies, bird flocks, and bee swarms. In engineering, this translates into
+ decentralized control, fault tolerance, and parallel task execution. Key literature, including
+ works by Brambilla et al. (2013) on swarm behavior modeling and optimization, emphasizes
+ the importance of simple local rules enabling complex group behavior.
+ We adapted these ideas to a small-scale, embedded implementation where a master UGV
+ allocates sub-tasks and slave UGVs operate semi-independently. Instead of using AI-based
+ swarm logic, we created a deterministic and predictable distribution mechanism based on task
+ time and distance.
+\section{Task Distribution Strategies in Multi-Robot System}
+ Various algorithms are used in multi-agent robotics for task allocation, including Round
+Robin, First-Come-First-Serve (FCFS), Auction-Based, and Contract-Net Protocols. These
+ often assume full bidirectional communication and high-level computing infrastructure.
+ We instead designed a Time-Sliced Path Distribution Algorithm, which breaks a user-drawn
+ path into equidistant points, estimates time to travel each segment, and distributes them
+ across UGVs to balance workload. This was inspired by dynamic load balancing methods
+ used in parallel computing, where tasks are assigned based on computational effort or
+ execution time.
+\section{Collaborative Mapping Mechanism}
+ Before task allocation, the system enters Map Mode, where the environment is divided
+ between UGVs.
+ This collaborative scan builds a virtual map, enabling the user to click target points, after
+ which the system performs task distribution, path planning, and obstacle-aware navigation 
+ all offline and without GPS, LIDAR, or encoders.
+\section{RPM-Based Odometry and Dead Reckoning}
+Dead reckoning is the process of estimating a robot’s current position using previous position, speed, and heading data. We studied encoder-based odometry used in basic robotics where motor RPM, wheel diameter, and time are used to calculate displacement:
+
+\begin{equation*}
+    \text{Distance} = \frac{\text{RPM} \times \pi \times \text{Diameter} \times \Delta t}{60}
+\end{equation*}
+
+
+We adapted this method for ESP32-based UGVs by reading encoder pulses, calculating RPM in real-time, and updating (x, y) positions using simple kinematic equations. Resources from ROS documentation, open-source Arduino libraries, and MIT's OpenCourseWare provided foundational knowledge.
+
+\section{Embedded Communication Protocols – ESP-NOW}
+For swarm-level communication, we needed a protocol that:
+\begin{itemize}
+    \item Does not rely on a Wi-Fi router
+    \item Supports many-to-many communication
+    \item Has low latency and energy efficiency
+\end{itemize}
+
+ESP-NOW, developed by Espressif for the ESP32, enables fast, lightweight peer-to-peer messaging without the need for Wi-Fi infrastructure. Each ESP32 is addressed using its MAC address, and messages are sent in broadcast or unicast mode. Our system uses ESP-NOW for master-to-slave communication of tasks and slave-to-master acknowledgment of completion.
+
+Datasheets, Espressif's official documentation, and community forums like GitHub and RandomNerdTutorials helped in understanding and customizing ESP-NOW for our swarm.
+
+\section{Web-Based User Interface for Robotics Challenges}
+For intuitive control and visualization, we implemented an HTML + JavaScript-based webpage hosted on the master UGV via SPIFFS. It includes:
+\begin{itemize}
+    \item Canvas-based path drawing
+    \item Coordinate extraction and path segmentation
+    \item Live status display and control buttons
+\end{itemize}
+
+Reviewed several open-source robot dashboards and JavaScript libraries for drawing and DOM manipulation. Inspiration came from MIT App Inventor logic blocks, ROS WebTools, and real-time UI examples using websockets and AJAX.
+
+\section{Real-World Swarm Use Cases and Challenges}
+We analyzed real-world systems like Amazon Kiva robots (warehouse bots), Starship delivery robots (campus delivery), and SwarmDrones (AI-based swarm control) to understand practical design considerations:
+\begin{itemize}
+    \item Simple, robust hardware
+    \item Offline capability in poor connectivity zones
+    \item Scalable and modular architecture
+\end{itemize}
+
+While these systems rely on expensive hardware (e.g., LIDAR, SLAM, GPS), our project was designed to replicate the behavior using embedded techniques proving that basic hardware can also achieve useful swarm functionality with clever logic.
+
+
+
+
+
+\section{Component Specification}
+
+% --- Collage ---
+\begin{center}
+    \includegraphics[width=\textwidth]{component_collage_corrected.png}
+\end{center}
+
+% --- Descriptions ---
+
+\subsection*{1. A VAMAN LC-1 Development Board}
+A VAMAN LC-1, development board which has \textbf{ESP32}, \textbf{ARM CORTEX M4}, and \textbf{PYGMY FPGA} in it.
+
+\subsection*{2. ESP32 Microcontroller}
+Each UGV is powered by an ESP32 microcontroller.Its dual core processing and built-in Wi-Fi make it ideal for decentralized swarm control.
+
+\subsection*{3. DC Geared Motors with Wheels}
+Each UGV uses two DC geared motors with attached rubber wheels to enable differential drive motion.The third point of support is provided by a castor wheel for balance and smooth turns.
+
+\subsection*{4. Motor Driver Module L293N}
+Receives control signals from the ESP32 and drives the two DC motors accordingly. It handles current amplification and directional control, enabling the UGVs to move forward, backward, or rotate.
+
+\subsection*{5. Battery Pack}
+A 9V battery or Li-ion pack is used to power both the ESP32 and motor driver.
+
+
+
+
+
+
+
+
+\chapter{System Architecture}
+\section{Web-Based Control and Mapping Layer}
+At the top of the system is a web-based interface hosted directly on the ESP32 master using SPIFFS. When users enter “Map Mode,” the interface allows them to trigger a collaborative mapping operation, where the master and slave UGVs are each assigned a region (e.g., left/right half of the map) to explore autonomously.
+
+Each UGV updates its position using RPM-based dead reckoning as it moves. These live positions are displayed in real time on a grid-based canvas, allowing users to observe the ongoing scan visually. Once mapping is complete, the user can click on the virtual map to define target locations for task execution.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{UGV .png}
+    \caption{The image shows the web-based interface hosted on the master ESP32}
+    \label{fig:web_interface}
+\end{figure}
+
+The grey shapes represent the walls and boundaries identified by the robot using its RPM-based position tracking and motion updates. The red dot denotes the UGV’s current position, and the black path traces its movement history. As the UGV rotates and moves, each detected boundary point is plotted to create a virtual map of the surroundings.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{DISTANCE.png}
+    \caption{Real-Time Distance and Coordinate Logs}
+    \label{fig:distance_log}
+\end{figure}
+
+This data directly feeds into the virtual map displayed on the left side, allowing accurate reconstruction of rooms and spaces even without GPS, LIDAR, or encoders.
+
+
+\section{4.2 Task Allocation and Distribution Layer}
+
+After mapping, users can either:
+\begin{itemize}
+    \item Click target coordinates, or
+    \item Draw custom paths on the map
+\end{itemize}
+
+The system then applies a Time-Aware Path Distribution Algorithm, which:
+\begin{itemize}
+    \item Segments the selected path or points
+    \item Estimates execution time per segment
+\end{itemize}
+
+Assigns segments to each UGV based on proximity and load balancing.  
+The assignments are communicated over ESP-NOW, a low-latency, peer-to-peer protocol that requires no router or internet.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Screenshot 2025-06-22 124539.png}
+    \caption{UGV Spot Allocation Interface with Time-Aware Task Distribution}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{PSO.png}
+    \caption{Core Traits of Swarm Intelligence Reflected in SwarmBot Architecture}
+\end{figure}
+
+
+\section{4.3 Motion Execution and Feedback Layer}
+
+Upon receiving their tasks, each UGV:
+\begin{itemize}
+    \item Uses motor run-time, RPM, and wheel geometry to calculate displacement
+    \item Follows the assigned $(x, y)$ waypoints autonomously
+    \item Sends live position updates and completion acknowledgments back to the master
+\end{itemize}
+
+Motor direction and speed control are handled through the L293N motor driver, powered by a 9V battery or Li-ion pack.  
+All execution and feedback happen entirely offline, using only local hardware and onboard software.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{TRACKING.png}
+    \caption{Web Interface for UGV Control and Real-Time Position Tracking}
+\end{figure}
+
+This interface, hosted on the master ESP32, allows users to control and monitor the UGV in real time.  
+Manual control buttons are provided for movement, along with a test run option to calculate \textbf{RPM} using wheel specs and distance.  
+Users can also enter target $(x, y)$ coordinates for autonomous movement.
+
+On the right, the interface displays the UGV’s current position, angle, RPM, and state.  
+A small grid shows the live path traced by the bot, while a system log (like serial monitor) records each movement.  
+The entire system runs offline and enables full user interaction without any external server.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{hmm.png}
+    \caption{Enhanced Web Interface with Interactive Map Control}
+\end{figure}
+
+This updated interface allows users to directly click on any point within the map area to set a target position for the UGV.  
+The selected $(x, y)$ coordinates are immediately sent to the UGV via ESP-NOW, and the bot autonomously moves to the location using real-time position tracking.  
+The map features zoom, centering, and auto-follow options to monitor the bot’s motion.  
+Position info, manual controls, and system logs are also displayed for complete interaction and feedback all hosted offline on the ESP32.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{WhatsApp Image 2025-07-02 at 11.01.41_2bf54899.jpg} % ← Replace with actual file name
+    \caption{Master and Slave UGV Prototypes Used for Swarm Mapping and Coordination}
+\end{figure}
+
+The Communication Layer handles sending sub-paths to each slave UGV using the ESP-NOW protocol.  
+Each slave UGV is identified using its unique MAC address, allowing targeted communication.
+
+The data packet sent to each UGV contains:
+\begin{itemize}
+    \item A list of assigned $(x, y)$ coordinates
+    \item Motion instructions
+    \item A start signal to begin execution
+\end{itemize}
+
+Since ESP-NOW is connectionless and low-latency, it allows direct, fast communication between devices without needing a Wi-Fi router or internet.
+
+Once a slave receives its task, the Motion Execution Layer becomes active:
+\begin{itemize}
+    \item Position estimation is performed using dead-reckoning based on:
+    \begin{itemize}
+        \item Known motor RPM
+        \item Wheel circumference
+        \item Motor run-time
+    \end{itemize}
+    \item No encoders are used all movement is calculated using basic kinematic equations
+    \item Motor control is handled through the L298N motor driver
+    \item After reaching its assigned destination, each UGV sends a completion acknowledgment back to the master via ESP-NOW
+\end{itemize}
+
+The web interface is updated in real-time, showing:
+\begin{itemize}
+    \item Each UGV’s path
+    \item Current status
+    \item Completion updates
+\end{itemize}
+
+The entire architecture is:
+\begin{itemize}
+    \item Fully offline (no internet required)
+    \item Scalable (easily supports more UGVs)
+    \item Hardware-minimal (no GPS, no encoders, no routers)
+\end{itemize}
+
+All modules operate independently and reliably, making the system robust and suitable for real-world deployment.
+
+
+
+\chapter{Results Obtained}
+The SwarmBots system was successfully implemented and tested using multiple UGVs in a structured indoor environment. The following outcomes demonstrate the core capabilities of the system.
+
+\textbf{Collaborative Mapping Execution} \\
+Upon initiating Map Mode, UGVs explored assigned regions of the environment (e.g., left/right zones) using RPM-based dead reckoning. The master ESP32 divided the space and communicated zone boundaries to each bot. The system generated a real-time virtual map displayed on the web interface, allowing complete spatial visualization without any GPS, LIDAR, or encoders.
+
+\textbf{User-Driven Target Selection Post-Mapping} \\
+Once mapping was complete, users could directly click on any location within the virtual map to assign task points. This formed the bridge between environment exploration and task execution, enabling dynamic interaction through a fully offline dashboard.
+
+
+\textbf{Autonomous Execution by Multiple UGVs} \\
+Each UGV independently executed its assigned segment using dead reckoning and onboard timing. Tasks were performed in parallel, with no manual intervention, leveraging ESP-NOW communication for coordination and status updates.
+
+\textbf{Accurate Position Estimation Without GPS or Encoders} \\
+UGVs estimated their live positions using motor RPM and wheel geometry. Test runs showed a maximum position deviation of $\pm$5 cm, which was sufficient for reliable operation in indoor mapped environments.
+
+\textbf{Real-Time Tracking and Visual Feedback} \\
+The ESP32-hosted dashboard updated the position, angle, and state of each UGV in real time. Features like auto-follow, zoom, and path trace allowed users to monitor all bots throughout mapping and execution phases with complete visibility.
+
+\textbf{Scalability and Load Balancing} \\
+The system was tested with up to 3 UGVs operating concurrently. Each UGV mapped and executed its assigned region independently, with no overlap, demonstrating the scalability of both the mapping and task distribution algorithms.
+
+\textit{Note: All technical documentation supporting these results are available in\href{https://github.com/sowmith12/SWARMBOTS/tree/main}{"GitHub"}.}
+
+
+\chapter{Practical Applications}
+The SwarmBot system demonstrates a scalable and affordable platform for real-world multi-UGV coordination. Its offline capability, autonomous task distribution, and web-based control make it ideal for a range of applications:
+
+\vspace{0.5cm}
+\textbf{Warehouse Automation} \\
+UGVs can be assigned to transport goods to various shelves or pickup zones. The master can dynamically divide storage tasks among bots without any human supervision or central server.
+
+\vspace{0.5cm}
+\textbf{Precision Agriculture} \\
+The system can divide crop fields into regions and assign monitoring or spraying tasks to different UGVs. The time-aware allocation ensures each bot handles a balanced portion of the field.
+
+\vspace{0.5cm}
+\textbf{Disaster Response and Search Missions} \\
+In GPS-denied or infrastructure-damaged environments, SwarmBot can deploy UGVs to explore different zones, mark visited areas, or deliver supplies all coordinated offline.
+
+\vspace{0.5cm}
+\textbf{Educational Demonstrations} \\
+The visual nature of the interface and swarm behavior makes SwarmBot an excellent educational tool for teaching embedded systems, robotics, and autonomous systems.
+
+\vspace{0.5cm}
+\textbf{Factory Floor Patrol or Inspection} \\
+UGVs can be tasked with patrolling separate sections of a factory or lab, inspecting parameters, or performing basic deliveries within the building.
+
+\vspace{0.5cm}
+\textbf{Custom Path Execution Systems} \\
+Any user-defined path such as shapes, letters, or predefined patrol routes can be divided and executed by the swarm, making it suitable for signage robots or even light shows using UGVs.
+
+
+\chapter{Future Scope}
+
+SwarmBot can be extended in several ways to handle more complex and large-scale tasks:
+
+\vspace{0.5cm}
+\textbf{Incorporating Basic Obstacle Avoidance} \\
+The current system assumes relatively open spaces or static boundaries. Future work can integrate basic IR or ultrasonic sensors for real-time obstacle detection and avoidance.
+
+\vspace{0.5cm}
+\textbf{Improving Position Accuracy} \\
+Adding wheel encoders or gyroscopic sensors can improve dead reckoning accuracy. Alternatively, simple camera-based visual odometry can enhance localization.
+
+\vspace{0.5cm}
+\textbf{Dynamic Mapping and Updating} \\
+The system currently performs static mapping before task assignment. Future upgrades can allow dynamic re-mapping, obstacle updates, and real-time path re-planning.
+
+\vspace{0.5cm}
+\textbf{Scaling Beyond Three UGVs} \\
+The system can be tested and extended to handle larger swarms, possibly using a multi-layer communication hierarchy to reduce congestion.
+
+\vspace{0.5cm}
+\textbf{Integrating More Complex Path Planning Algorithms} \\
+Currently, simple straight-line and point-to-point pathing are used. Advanced algorithms like A* or Dijkstra’s algorithm can further optimize navigation, especially in more cluttered spaces.
+
+\vspace{0.5cm}
+\textbf{Exploring Outdoor Capabilities} \\
+While designed for indoor use, ruggedizing the system with better motors, weather-resistant bodies, and solar power could enable outdoor operation.
+
+
+\chapter{Conclusion}
+
+SwarmBot demonstrates that complex multi-robot coordination does not necessarily require GPS, LIDAR, or cloud-based servers. By leveraging RPM-based dead reckoning, peer-to-peer ESP-NOW communication, and a self-hosted web dashboard, we successfully created a scalable, low-cost, fully offline swarm system.
+
+Through collaborative mapping, dynamic task assignment, and autonomous path execution, SwarmBot provides a proof of concept for resource-efficient swarm robotics. Its real-time visualization, click-based control, and lightweight hardware requirements open up new possibilities for deploying autonomous fleets in environments where GPS or Wi-Fi infrastructure is unavailable.
+
+The project also serves as an excellent educational platform for understanding embedded systems, web interfacing, and decentralized control while laying the foundation for future expansion into more advanced swarm behaviors.
+\chapter{References}
+
+\begin{enumerate}
+    \item \href{https://link.springer.com/article/10.1007/s11721-012-0075-2} {Brambilla, M., Ferrante, E., Birattari, M., \& Dorigo, M. (2013). Swarm robotics: A review from the swarm engineering perspective. *Swarm Intelligence, 7*(1), 1–41.}
+    
+    \item \href{https://www.researchgate.net/publication/2998069_Market-Based_Multirobot_Coordination_A_Survey_and_Analysis}{Kalra, N., Ferguson, D., \& Stentz, A. (2005). Hoplite: A Markov Decision Process-Based Multirobot Coordination System. *International Journal of Robotics Research, 24*(10), 971–1000.}
+    
+    \item \href{https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/network/esp_now.html}{Espressif Systems. ESP-NOW User Guide. [Online].}
+    
+    \item \href{https://www.arduino.cc/en/Tutorial/UltrasonicSensor}{Arduino. HC-SR04 Ultrasonic Distance Sensor Tutorial. [Online].}
+    
+    \item\href{https://www.researchgate.net/publication/3930289_Distributed_multi-robot_task_allocation_for_emergency_handling}{Kumar, M., \& Michael, N. (2008). Opportunistic Task Allocation in Multi-Robot Systems. *Robotics: Science and Systems IV*.}
+    
+    \item \href{https://randomnerdtutorials.com/esp32-web-server-spiffs-spi-flash-file-system/}{Random Nerd Tutorials. ESP32 Web Server using SPIFFS (Host HTML Files). [Online].}
+    
+    \item \href{https://github.com/gadepall/fwc-1}{Gadepalli, V. (2023). Future Wireless Communication: Embedded Systems and Robotics Tutorials. [GitHub Repository].}
+\end{enumerate}
+
+
+
+\end{document}
