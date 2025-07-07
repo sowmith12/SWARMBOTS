@@ -52,7 +52,7 @@ The allocation assigns a set of spots (2D coordinates) to multiple UGVs, startin
 - **Arduino**: Uses fixed-size arrays and manual iteration due to memory constraints. Stores results in a global `assignmentResult` string for web display.
 - Both assume spots are visited in the order provided, without optimizing the sequence within a UGV’s route (not a full Traveling Salesman Problem solution).
 <img src="ugvallocate_python.png" alt="Alt text" width="500" height="300">
-<img src="allocation_webpage.png" alt="Alt text" width="500" height="300">
+<img src="allocation_webpage.png" alt="Alt text" width="500" height="600">
 
 ## Usage
 - **Python**: Run the script, enter the number of UGVs and spots, and input their coordinates. The program outputs the optimal spot assignments.
