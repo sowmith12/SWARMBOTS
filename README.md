@@ -53,8 +53,8 @@ Both the master and slave ESP32 boards use identical pin configurations to contr
   - `esp_now.h` (for ESP-NOW communication)
   - `WebServer.h` (for hosting the web interface on the master)
 - **Source Files**:
-  - `esp_now_motor_control.ino`: Slave ESP32 code for receiving ESP-NOW commands and controlling motors.
-  - `esp_now_web_control.ino`: Master ESP32 code for hosting a web server, controlling local motors, and sending ESP-NOW commands to the slave.
+  - `slave.ino`: Slave ESP32 code for receiving ESP-NOW commands and controlling motors.
+  - `master.ino`: Master ESP32 code for hosting a web server, controlling local motors, and sending ESP-NOW commands to the slave.
 
 ## Setup Instructions
 
@@ -72,7 +72,7 @@ Both the master and slave ESP32 boards use identical pin configurations to contr
 
 2. **Configure WiFi Credentials** (Master only):
 
-   - In `esp_now_web_control.ino`, update the WiFi credentials to match your router:
+   - In `master.ino`, update the WiFi credentials to match your router:
 
      ```cpp
      const char* ssid = "Infinix"; // Replace with your WiFi SSID
@@ -81,7 +81,7 @@ Both the master and slave ESP32 boards use identical pin configurations to contr
 
 3. **Set Slave MAC Address** (Master only):
 
-   - In `esp_now_web_control.ino`, update the `slaveMacAddress` array with the slave ESP32’s MAC address:
+   - In `slave.ino`, update the `slaveMacAddress` array with the slave ESP32’s MAC address:
 
      ```cpp
      uint8_t slaveMacAddress[] = {0xEC, 0x94, 0xCB, 0x52, 0x99, 0x78}; // Replace with slave’s MAC
@@ -97,8 +97,8 @@ Both the master and slave ESP32 boards use identical pin configurations to contr
 
    - Connect each ESP32 to your computer via USB.
    - In Arduino IDE, select `Tools > Board > ESP32 Arduino > ESP32 Dev Module`.
-   - Upload `esp_now_motor_control.ino` to the slave ESP32.
-   - Upload `esp_now_web_control.ino` to the master ESP32.
+   - Upload `slave.ino` to the slave ESP32.
+   - Upload `master.ino` to the master ESP32.
    - For PlatformIO users, create a project, add the source files, and configure `platformio.ini` for ESP32 (e.g., `board = esp32dev`).
 
 5. **Verify Connections**:
@@ -169,42 +169,3 @@ Both the master and slave ESP32 boards use identical pin configurations to contr
 - **Web Interface**:
 
   - The HTML page uses JavaScript (`fetch` API) to send commands to the master ESP32.
-  - Styled with CSS for a clean layout with centered buttons.
-
-## Troubleshooting
-
-- **WiFi Connection Fails** (Master):
-
-  - Verify `ssid` and `password` in `esp_now_web_control.ino` match your router’s credentials.
-  - Ensure the router supports 2.4GHz (ESP32 does not support 5GHz).
-  - Restart the master ESP32 and monitor Serial output for connection status.
-
-- **ESP-NOW Communication Fails**:
-
-  - Confirm the slave’s MAC address in `esp_now_web_control.ino` is correct.
-  - Ensure both ESP32s are within \~100m (line-of-sight) for reliable ESP-NOW communication.
-  - Check Serial Monitor for ESP-NOW initialization or peer registration errors.
-
-- **Motors Don’t Move**:
-
-  - Verify L293D connections and ensure the motor power supply voltage matches motor specifications.
-  - Check ESP32 GPIO pins are correctly wired to L293D inputs (IN1-IN4).
-  - Monitor Serial output to confirm commands are received and processed.
-
-- **Web Interface Inaccessible**:
-
-  - Ensure the device accessing the web interface is on the same WiFi network as the master ESP32.
-  - Use the correct IP address from the master’s Serial Monitor.
-  - Verify the browser supports JavaScript (required for `fetch` API).
-
-## Notes
-
-- **Security**: The web server and ESP-NOW communication are unencrypted. Use in a trusted network or implement encryption for production use.
-- **Scalability**: Add more slave ESP32s by registering additional MAC addresses in the master’s peer list (modify `esp_now_web_control.ino`).
-- **Power Management**: Ensure the motor power supply provides sufficient current to avoid ESP32 brownouts.
-- **Range**: ESP-NOW range varies with environment; obstacles may reduce effective communication distance.
-- **Debugging**: Use Serial Monitor (115200 baud) for both ESP32s to verify command flow and system status.
-
-## License
-
-This project is provided as-is for educational purposes, leveraging embedded C programming for Arduino-compatible ESP32 boards. Use at your own risk.
