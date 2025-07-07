@@ -167,5 +167,6 @@ Both the master and slave ESP32 boards use identical pin configurations to contr
   - The system uses binary logic to drive the motors, similar to flip-flops or binary counters in digital circuits.
 
 - **Web Interface**:
+  - <img src="web_interface.png" alt="Alt text" width="500" height="300">
 
   - The HTML page uses JavaScript (`fetch` API) to send commands to the master ESP32.
