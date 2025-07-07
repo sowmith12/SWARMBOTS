@@ -30,7 +30,7 @@ This project implements a control and position tracking system for an ESP32-base
 - **Go to Position**: Input target (x, y) coordinates to move the UGV (requires RPM calculation).
 - **Position Tracking**: View real-time position (x, y, angle) and motor state on the web interface, with a visual grid showing the UGV's path.
 - **Reset/Clear**: Reset position to (0,0) or clear the path display.
-- <img src="tracking.png" alt="Alt text" width="500" height="600">
+- <img src="tracking.png" alt="Alt text" width="500" height="500">
 
 
 ## Features
