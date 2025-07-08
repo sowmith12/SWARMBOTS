@@ -46,7 +46,7 @@ This project implements a room mapping system using an ESP32-based Unmanned Grou
 4. Upload code to ESP32
 5. Access the web interface using the IP address printed to Serial Monitor
 6. Click "Start Mapping" to begin the mapping process
-<img src="mapping.png" alt="Alt text" width="500" height="300">
+<img src="mapping.png" alt="Alt text" width="500" height="500">
 <img src="serial_monitor.png" alt="Alt text" width="500" height="300">
 
 ## Usage
